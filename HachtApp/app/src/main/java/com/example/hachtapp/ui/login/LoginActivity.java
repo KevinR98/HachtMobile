@@ -22,6 +22,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -29,8 +31,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.hachtapp.R;
+import com.example.hachtapp.controller.Controller;
 import com.example.hachtapp.ui.login.LoginViewModel;
 import com.example.hachtapp.ui.login.LoginViewModelFactory;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -123,9 +129,16 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //loadingProgressBar.setVisibility(View.VISIBLE);
                 //loginViewModel.login(usernameEditText.getText().toString(),passwordEditText.getText().toString());
-                Toast toast1 = Toast.makeText(getApplicationContext(),"Exito", Toast.LENGTH_LONG);
-                toast1.show();
-                ConnectToHacht();
+
+                Controller controller = Controller.get_instance();
+                controller.initialize(getApplicationContext(),
+                        new Response.Listener() {
+                            @Override
+                            public void onResponse(Object response) {
+                                ConnectToHacht();
+                            }
+                        });
+
             }
         });
     }
@@ -142,37 +155,62 @@ public class LoginActivity extends AppCompatActivity {
 
     private void ConnectToHacht(){
 
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://martinvc96.pythonanywhere.com/rest-auth/login/";
-        //String url ="http://172.18.156.65:8000/";
+        final EditText usernameEditText = findViewById(R.id.username);
+        final EditText passwordEditText = findViewById(R.id.password);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        System.out.println("respuesta obtenida :" + response);
+        final Controller controller = Controller.get_instance();
+        controller.setContext(this);
+
+        try {
+            controller.login(usernameEditText.getText().toString(),
+                    passwordEditText.getText().toString(),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            System.out.println(response);
+                            TestLogin();
+                        }
+                    },
+
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            if (!(error instanceof ParseError)) {
+                                System.out.println(error.toString());
+                            } else {
+                                System.out.println("No se pudo parsear la respuesta (pero hubo)");
+                                TestLogin();
+                            }
+
+                        }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                System.err.println(error);
-            }
+            );
+        }catch (JSONException e){
+            System.out.println("No se pudo convertir a JSON");
+        }
 
-        }){
-            @Override
-            protected Map<String, String> getParams()
-            {
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("username", "martin@algo.com");
-                params.put("password", "1234");
+    }
 
-                return params;
-            }
-        };
+    private void TestLogin(){
+        final Controller controller = Controller.get_instance();
+        controller.setContext(this);
 
-        queue.add(stringRequest);
+        controller.get_pacientes(
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        System.out.println(response.toString());
+                    }
+                },
 
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println("Hubo un error obteniendo los pacientes");
 
+                    }
+                }
+        );
     }
 
 }
