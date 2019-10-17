@@ -2,9 +2,12 @@ package com.example.hachtapp.ui.login;
 
 import android.app.Activity;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -48,99 +51,109 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
-                .get(LoginViewModel.class);
 
-        final EditText usernameEditText = findViewById(R.id.username);
-        final EditText passwordEditText = findViewById(R.id.password);
-        final Button loginButton = findViewById(R.id.login);
-        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
+        final Controller controller = Controller.get_instance();
+        final LifecycleOwner lifecycleOwner = this;
+        final Context ctx = this;
 
-        loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
-            @Override
-            public void onChanged(@Nullable LoginFormState loginFormState) {
-                if (loginFormState == null) {
-                    return;
-                }
-                loginButton.setEnabled(loginFormState.isDataValid());
-                if (loginFormState.getUsernameError() != null) {
-                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
-                }
-                if (loginFormState.getPasswordError() != null) {
-                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
-                }
-            }
-        });
+        controller.initialize(this,
 
-        loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
-            @Override
-            public void onChanged(@Nullable LoginResult loginResult) {
-                if (loginResult == null) {
-                    return;
-                }
-                loadingProgressBar.setVisibility(View.GONE);
-                if (loginResult.getError() != null) {
-                    showLoginFailed(loginResult.getError());
-                }
-                if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
-                }
-                setResult(Activity.RESULT_OK);
+                new Response.Listener() {
+                    @Override
+                    public void onResponse(Object response) {
 
-                //Complete and destroy login activity once successful
-                finish();
-            }
-        });
+                        setContentView(R.layout.activity_login);
+                        loginViewModel = ViewModelProviders.of((FragmentActivity) ctx, new LoginViewModelFactory())
+                                .get(LoginViewModel.class);
 
-        TextWatcher afterTextChangedListener = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // ignore
-            }
+                        final EditText usernameEditText = findViewById(R.id.username);
+                        final EditText passwordEditText = findViewById(R.id.password);
+                        final Button loginButton = findViewById(R.id.login);
+                        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // ignore
-            }
+                        System.out.println("Obtuve un token");
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
-            }
-        };
-        usernameEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
-                }
-                return false;
-            }
-        });
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //loadingProgressBar.setVisibility(View.VISIBLE);
-                //loginViewModel.login(usernameEditText.getText().toString(),passwordEditText.getText().toString());
-
-                Controller controller = Controller.get_instance();
-                controller.initialize(getApplicationContext(),
-                        new Response.Listener() {
+                        loginViewModel.getLoginFormState().observe(lifecycleOwner, new Observer<LoginFormState>() {
                             @Override
-                            public void onResponse(Object response) {
-                                ConnectToHacht();
+                            public void onChanged(@Nullable LoginFormState loginFormState) {
+                                if (loginFormState == null) {
+                                    return;
+                                }
+                                loginButton.setEnabled(loginFormState.isDataValid());
+                                if (loginFormState.getUsernameError() != null) {
+                                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
+                                }
+                                if (loginFormState.getPasswordError() != null) {
+                                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
+                                }
                             }
                         });
 
-            }
-        });
+                        loginViewModel.getLoginResult().observe(lifecycleOwner, new Observer<LoginResult>() {
+                            @Override
+                            public void onChanged(@Nullable LoginResult loginResult) {
+                                if (loginResult == null) {
+                                    return;
+                                }
+                                loadingProgressBar.setVisibility(View.GONE);
+                                if (loginResult.getError() != null) {
+                                    showLoginFailed(loginResult.getError());
+                                }
+                                if (loginResult.getSuccess() != null) {
+                                    updateUiWithUser(loginResult.getSuccess());
+                                }
+
+                                setResult(Activity.RESULT_OK);
+
+                                //Complete and destroy login activity once successful
+                                //finish();
+                            }
+                        });
+
+                        TextWatcher afterTextChangedListener = new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                                // ignore
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                // ignore
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
+                                        passwordEditText.getText().toString());
+                            }
+                        };
+                        usernameEditText.addTextChangedListener(afterTextChangedListener);
+                        passwordEditText.addTextChangedListener(afterTextChangedListener);
+                        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+                            @Override
+                            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                                    loginViewModel.login(usernameEditText.getText().toString(),
+                                            passwordEditText.getText().toString());
+                                }
+                                return false;
+                            }
+                        });
+
+                        loginButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                loadingProgressBar.setVisibility(View.VISIBLE);
+
+                                ConnectToHacht(loadingProgressBar);
+                            }
+                        });
+
+                    }
+                });
+
+
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
@@ -153,47 +166,43 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
 
-    private void ConnectToHacht(){
+    private void ConnectToHacht(final ProgressBar loadingProgressBar){
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
 
         final Controller controller = Controller.get_instance();
-        controller.setContext(this);
 
-        try {
-            controller.login(usernameEditText.getText().toString(),
-                    passwordEditText.getText().toString(),
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            System.out.println(response);
-                            TestLogin();
-                        }
-                    },
 
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            if (!(error instanceof ParseError)) {
-                                System.out.println(error.toString());
-                            } else {
-                                System.out.println("No se pudo parsear la respuesta (pero hubo)");
-                                TestLogin();
-                            }
+        controller.login(usernameEditText.getText().toString(),
+                passwordEditText.getText().toString(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        loadingProgressBar.setVisibility(View.GONE);
+                        Toast.makeText(getApplicationContext(), "Login exitoso", Toast.LENGTH_LONG).show();
+                        //loginViewModel.login(usernameEditText.getText().toString(), passwordEditText.getText().toString());
+                    }
+                },
 
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        loadingProgressBar.setVisibility(View.GONE);
+                        if (!(error instanceof ParseError)) {
+                            Toast.makeText(getApplicationContext(), "Login fallido", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "No se pudo parsear la respuesta (pero hubo)", Toast.LENGTH_SHORT).show();
                         }
                     }
-            );
-        }catch (JSONException e){
-            System.out.println("No se pudo convertir a JSON");
-        }
+                }
+        );
 
     }
 
     private void TestLogin(){
+
         final Controller controller = Controller.get_instance();
-        controller.setContext(this);
 
         controller.get_pacientes(
                 new Response.Listener<JSONObject>() {

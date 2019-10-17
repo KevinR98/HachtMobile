@@ -160,7 +160,7 @@ public class Controller {
 
     private void request_post(String url, final Map<String, String> params,
                               Response.Listener listener,
-                              Response.ErrorListener errorListener) throws JSONException {
+                              Response.ErrorListener errorListener){
 
         RequestQueue queue = Volley.newRequestQueue(ctx);
 
@@ -204,7 +204,7 @@ public class Controller {
 
 
     public void login(String nombre, String pass, Response.Listener listener,
-                      Response.ErrorListener errorListener) throws JSONException{
+                      Response.ErrorListener errorListener){
 
         Map<String, String>  params = new HashMap<String, String>();
         params.put("username", "martin@algo.com");
