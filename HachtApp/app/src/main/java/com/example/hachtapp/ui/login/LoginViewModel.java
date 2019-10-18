@@ -5,7 +5,13 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import android.util.Patterns;
+import android.view.View;
+import android.widget.Toast;
 
+import com.android.volley.ParseError;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.example.hachtapp.controller.Controller;
 import com.example.hachtapp.data.LoginRepository;
 import com.example.hachtapp.data.Result;
 import com.example.hachtapp.data.model.LoggedInUser;
@@ -29,16 +35,28 @@ public class LoginViewModel extends ViewModel {
         return loginResult;
     }
 
-    public void login(String username, String password) {
-        // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
+    public void login(final String username, String password) {
 
-        if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
+        // can be launched in a separate asynchronous job
+        //Result<LoggedInUser> result = loginRepository.login(username, password);
+
+        Controller controller = Controller.get_instance();
+
+        controller.login(username, password,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        loginResult.setValue(new LoginResult(new LoggedInUserView(username)));
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        loginResult.setValue(new LoginResult(R.string.login_failed));
+                    }
+                }
+        );
     }
 
     public void loginDataChanged(String username, String password) {

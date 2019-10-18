@@ -56,6 +56,10 @@ public class LoginActivity extends AppCompatActivity {
         final LifecycleOwner lifecycleOwner = this;
         final Context ctx = this;
 
+        /*
+        * Renderiza la app solo si tiene respuesta del servidor
+        * Es necesario obtener información de éste.
+        * */
         controller.initialize(this,
 
                 new Response.Listener() {
@@ -70,8 +74,6 @@ public class LoginActivity extends AppCompatActivity {
                         final EditText passwordEditText = findViewById(R.id.password);
                         final Button loginButton = findViewById(R.id.login);
                         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
-
-                        System.out.println("Obtuve un token");
 
                         loginViewModel.getLoginFormState().observe(lifecycleOwner, new Observer<LoginFormState>() {
                             @Override
@@ -96,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                                     return;
                                 }
                                 loadingProgressBar.setVisibility(View.GONE);
+
                                 if (loginResult.getError() != null) {
                                     showLoginFailed(loginResult.getError());
                                 }
@@ -105,7 +108,9 @@ public class LoginActivity extends AppCompatActivity {
 
                                 setResult(Activity.RESULT_OK);
 
-                                //Complete and destroy login activity once successful
+                                /*
+                                Debería hacer el nuevo activity o view acá!!!
+                                 */
                                 //finish();
                             }
                         });
@@ -146,7 +151,7 @@ public class LoginActivity extends AppCompatActivity {
                             public void onClick(View v) {
                                 loadingProgressBar.setVisibility(View.VISIBLE);
 
-                                ConnectToHacht(loadingProgressBar);
+                                loginViewModel.login(usernameEditText.getText().toString(), passwordEditText.getText().toString());
                             }
                         });
 
@@ -164,40 +169,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
-    }
-
-    private void ConnectToHacht(final ProgressBar loadingProgressBar){
-
-        final EditText usernameEditText = findViewById(R.id.username);
-        final EditText passwordEditText = findViewById(R.id.password);
-
-        final Controller controller = Controller.get_instance();
-
-
-        controller.login(usernameEditText.getText().toString(),
-                passwordEditText.getText().toString(),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        loadingProgressBar.setVisibility(View.GONE);
-                        Toast.makeText(getApplicationContext(), "Login exitoso", Toast.LENGTH_LONG).show();
-                        //loginViewModel.login(usernameEditText.getText().toString(), passwordEditText.getText().toString());
-                    }
-                },
-
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        loadingProgressBar.setVisibility(View.GONE);
-                        if (!(error instanceof ParseError)) {
-                            Toast.makeText(getApplicationContext(), "Login fallido", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "No se pudo parsear la respuesta (pero hubo)", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-        );
-
     }
 
     private void TestLogin(){
