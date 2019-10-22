@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                                 if (loginResult.getSuccess() != null) {
                                     updateUiWithUser(loginResult.getSuccess());
-                                    GotoMainHub(response.toString());
+                                    GotoMainHub(loginResult.getSuccess().getResponse().toString());
                                 }
 
                                 setResult(Activity.RESULT_OK);
