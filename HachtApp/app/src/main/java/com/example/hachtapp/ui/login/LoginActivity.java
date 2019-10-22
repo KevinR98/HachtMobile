@@ -7,6 +7,8 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+
+import android.content.Intent;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -33,6 +35,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.hachtapp.MainHub;
 import com.example.hachtapp.R;
 import com.example.hachtapp.controller.Controller;
 import com.example.hachtapp.ui.login.LoginViewModel;
@@ -104,6 +107,7 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                                 if (loginResult.getSuccess() != null) {
                                     updateUiWithUser(loginResult.getSuccess());
+                                    GotoMainHub(response.toString());
                                 }
 
                                 setResult(Activity.RESULT_OK);
@@ -186,11 +190,19 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        System.out.println("Hubo un error obteniendo los pacientes");
+                        System.out.println("Hubo un error obteniendo los Dash_Pacientes");
 
                     }
                 }
         );
+    }
+
+
+    //Move to the next activity
+    private void GotoMainHub(String data){
+        Intent intent = new Intent(this, MainHub.class);
+        intent.putExtra("Data", data);
+        startActivity(intent);
     }
 
 }
