@@ -33,6 +33,7 @@ public class Demo extends AppCompatActivity {
     ContentValues values;
     Uri imageUri;
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
+    String path_sample;
 
 
     @Override
@@ -41,6 +42,7 @@ public class Demo extends AppCompatActivity {
         setContentView(R.layout.activity_demo);
 
         Button btnCamera = findViewById(R.id.btnCamera);
+        Button btnAnalizar = findViewById(R.id.btnAnalizar);
         imageView = findViewById(R.id.imageView);
 
         if(checkPermissionREAD_EXTERNAL_STORAGE(this)){}
@@ -61,6 +63,13 @@ public class Demo extends AppCompatActivity {
                 startActivityForResult(intent, 0);
             }
 
+        });
+
+        btnAnalizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HandleModelForward();
+            }
         });
 
 
@@ -91,8 +100,8 @@ public class Demo extends AppCompatActivity {
             Bitmap thumbnail = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
             imageView.setImageBitmap(thumbnail);
             imageView.setRotation(90);
-            String imageurl = getRealPathFromURI(imageUri);
-            System.out.println(imageurl);
+            path_sample = getRealPathFromURI(imageUri);
+            System.out.println(path_sample);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -151,5 +160,9 @@ public class Demo extends AppCompatActivity {
                 });
         AlertDialog alert = alertBuilder.create();
         alert.show();
+    }
+
+    private void HandleModelForward(){
+        //do forward stuff...
     }
 }
