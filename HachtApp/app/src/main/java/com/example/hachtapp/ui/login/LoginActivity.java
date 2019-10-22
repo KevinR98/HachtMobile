@@ -5,6 +5,7 @@ import android.app.Activity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -30,6 +31,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.hachtapp.MainHub;
 import com.example.hachtapp.R;
 import com.example.hachtapp.controller.Controller;
 import com.example.hachtapp.ui.login.LoginViewModel;
@@ -63,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (loginFormState == null) {
                     return;
                 }
-                loginButton.setEnabled(loginFormState.isDataValid());
+                loginButton.setEnabled(true);
                 if (loginFormState.getUsernameError() != null) {
                     usernameEditText.setError(getString(loginFormState.getUsernameError()));
                 }
@@ -130,7 +132,7 @@ public class LoginActivity extends AppCompatActivity {
                 //loadingProgressBar.setVisibility(View.VISIBLE);
                 //loginViewModel.login(usernameEditText.getText().toString(),passwordEditText.getText().toString());
 
-                Controller controller = Controller.get_instance();
+                final Controller controller = Controller.get_instance();
                 controller.initialize(getApplicationContext(),
                         new Response.Listener() {
                             @Override
@@ -168,7 +170,23 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(String response) {
                             System.out.println(response);
-                            TestLogin();
+                            controller.get_pacientes(
+                                    new Response.Listener<JSONObject>() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+                                            System.out.println(response.toString());
+                                            GotoMainHub(response.toString());
+                                        }
+                                    },
+
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            System.out.println("Hubo un error obteniendo los Dash_Pacientes");
+
+                                        }
+                                    }
+                            );
                         }
                     },
 
@@ -179,7 +197,7 @@ public class LoginActivity extends AppCompatActivity {
                                 System.out.println(error.toString());
                             } else {
                                 System.out.println("No se pudo parsear la respuesta (pero hubo)");
-                                TestLogin();
+                                //TestLogin();
                             }
 
                         }
@@ -206,11 +224,19 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        System.out.println("Hubo un error obteniendo los pacientes");
+                        System.out.println("Hubo un error obteniendo los Dash_Pacientes");
 
                     }
                 }
         );
+    }
+
+
+    //Move to the next activity
+    private void GotoMainHub(String data){
+        Intent intent = new Intent(this, MainHub.class);
+        intent.putExtra("Data", data);
+        startActivity(intent);
     }
 
 }
