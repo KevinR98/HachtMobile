@@ -17,6 +17,8 @@ import com.example.hachtapp.data.Result;
 import com.example.hachtapp.data.model.LoggedInUser;
 import com.example.hachtapp.R;
 
+import org.json.JSONObject;
+
 public class LoginViewModel extends ViewModel {
 
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
@@ -40,13 +42,22 @@ public class LoginViewModel extends ViewModel {
         // can be launched in a separate asynchronous job
         //Result<LoggedInUser> result = loginRepository.login(username, password);
 
-        Controller controller = Controller.get_instance();
+        final Controller controller = Controller.get_instance();
 
         controller.login(username, password,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        loginResult.setValue(new LoginResult(new LoggedInUserView(username)));
+                        controller.get_pacientes(new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                loginResult.setValue(new LoginResult(new LoggedInUserView(username, response)));
+                            }}, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                loginResult.setValue(new LoginResult(R.string.login_failed));
+                            }
+                        });
                     }
                 },
 

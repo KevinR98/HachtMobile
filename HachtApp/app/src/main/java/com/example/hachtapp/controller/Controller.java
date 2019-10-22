@@ -26,6 +26,7 @@ public class Controller {
     private static Controller instance;
     private Context ctx;
     private String cookies;
+    private String session_id;
 
     public static Controller get_instance(){
         return (instance != null) ? instance : new Controller();
@@ -83,7 +84,7 @@ public class Controller {
         String url = main_url + "?android=1";
 
         RequestQueue queue = Volley.newRequestQueue(ctx);
-        final String token = cookies.substring(cookies.indexOf('=')+1, cookies.indexOf(';'));
+        //final String token = cookies.substring(cookies.indexOf('=')+1, cookies.indexOf(';'));
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url,
                 new JSONObject(), listener, errorListener){
@@ -95,8 +96,8 @@ public class Controller {
             public Map getHeaders() throws AuthFailureError {
                 HashMap headers = new HashMap();
                 headers.put("Content-Type", "application/json");
-                headers.put("X-CSRFToken", token);
-                headers.put("Cookie", cookies);
+                //headers.put("X-CSRFToken", token);
+                headers.put("Cookie", add_session_cookies());
                 return headers;
             }
 
@@ -121,12 +122,11 @@ public class Controller {
         String url = main_url + "?android=1";
 
         for(String key : params.keySet()){
-            char delimiter = '&';
-            url += delimiter + key + params.get(key);
+            url += '&' + key + "=" + params.get(key);
         }
 
         RequestQueue queue = Volley.newRequestQueue(ctx);
-        final String token = cookies.substring(cookies.indexOf('=')+1, cookies.indexOf(';'));
+        //final String token = cookies.substring(cookies.indexOf('=')+1, cookies.indexOf(';'));
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url,
                 new JSONObject(), listener, errorListener){
@@ -138,8 +138,8 @@ public class Controller {
             public Map getHeaders() throws AuthFailureError {
                 HashMap headers = new HashMap();
                 headers.put("Content-Type", "application/json");
-                headers.put("X-CSRFToken", token);
-                headers.put("Cookie", cookies);
+                //headers.put("X-CSRFToken", token);
+                headers.put("Cookie", add_session_cookies());
                 return headers;
             }
 
@@ -210,7 +210,6 @@ public class Controller {
         params.put("username", "martin@algo.com");
         params.put("password", "1234");
         request_post("http://martinvc96.pythonanywhere.com/login_app/", params, listener, errorListener);
-
     }
 
     public void get_pacientes(Response.Listener listener,
@@ -220,6 +219,31 @@ public class Controller {
                 listener,
                 errorListener);
 
+    }
+
+    public void get_sesiones(String id_paciente,
+                             Response.Listener listener,
+                             Response.ErrorListener errorListener){
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("id_paciente", id_paciente);
+
+        request_get("http://martinvc96.pythonanywhere.com/dashboard_sesiones/",
+                params,
+                listener,
+                errorListener);
+
+    }
+
+    private String add_session_cookies(){
+        if (!cookies.contains("sessionid")) {
+            return "sessionid=" + session_id + "; " + cookies;
+        }
+        else {
+            String session = cookies.substring(cookies.indexOf('=')+1, cookies.indexOf(';'));
+            session_id = session;
+            return cookies;
+        }
     }
 
 

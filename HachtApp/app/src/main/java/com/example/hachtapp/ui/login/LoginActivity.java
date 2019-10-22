@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                                 if (loginResult.getSuccess() != null) {
                                     updateUiWithUser(loginResult.getSuccess());
-                                    GotoMainHub(response.toString());
+                                    GotoMainHub(loginResult.getSuccess().getResponse().toString());
                                 }
 
                                 setResult(Activity.RESULT_OK);
@@ -174,29 +174,6 @@ public class LoginActivity extends AppCompatActivity {
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
-
-    private void TestLogin(){
-
-        final Controller controller = Controller.get_instance();
-
-        controller.get_pacientes(
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        System.out.println(response.toString());
-                    }
-                },
-
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        System.out.println("Hubo un error obteniendo los Dash_Pacientes");
-
-                    }
-                }
-        );
-    }
-
 
     //Move to the next activity
     private void GotoMainHub(String data){

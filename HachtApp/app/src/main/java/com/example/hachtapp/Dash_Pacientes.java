@@ -2,13 +2,18 @@ package com.example.hachtapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.example.hachtapp.controller.Controller;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,14 +45,14 @@ public class Dash_Pacientes extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
+        if(pacientes == null){
+            GotoDashSesiones(getIntent().getStringExtra("Data"));
+        }
 
         List<HashMap<String, String>> listItems = new ArrayList<>();
         SimpleAdapter adapter = new SimpleAdapter(this, listItems, R.layout.list_item,
                 new String[]{"First Line", "Second Line", "Third Line"},
                 new int[]{R.id.text1, R.id.text2, R.id.text3});
-
-
 
         for (int i = 0; i < pacientes.length(); i++)
         {
@@ -69,8 +74,41 @@ public class Dash_Pacientes extends AppCompatActivity {
 
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 System.out.println(position);
+                pacienteClick(position);
             }
         });
 
+    }
+
+    private void pacienteClick(int position){
+        try{
+            String id = pacientes.getJSONObject(position).getString("id");
+
+            Controller controller = Controller.get_instance();
+            controller.setContext(this);
+
+            controller.get_sesiones(id, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    GotoDashSesiones(response.toString());
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    System.out.println("No se pudo obtener las sesiones del paciente, dentro del request");
+                }
+            });
+
+        }catch (Exception e){
+            System.out.println("No se pudo obtener las sesiones del paciente");
+        }
+    }
+
+    //Move to the next activity
+    private void GotoDashSesiones(String data){
+        /*Intent intent = new Intent(this, Dash_Sesiones.class);
+        intent.putExtra("Data", data);
+        startActivity(intent);*/
+        Toast.makeText(getApplicationContext(), data, Toast.LENGTH_LONG).show();
     }
 }
