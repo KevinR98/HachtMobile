@@ -235,6 +235,35 @@ public class Controller {
 
     }
 
+    public void get_muestras_sesion(String id_sesion,
+                             Response.Listener listener,
+                             Response.ErrorListener errorListener){
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("id_sesion", id_sesion);
+
+        request_get("http://martinvc96.pythonanywhere.com/dashboard_sesiones/components/muestras_sesion/",
+                params,
+                listener,
+                errorListener);
+
+    }
+
+    public void test_sample(String url,
+                                    Response.Listener listener,
+                                    Response.ErrorListener errorListener){
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("url", url);
+
+        request_get("http://martinvc96.pythonanywhere.com/demo_app/",
+                params,
+                listener,
+                errorListener);
+
+    }
+
+
     private String add_session_cookies(){
         if (!cookies.contains("sessionid")) {
             return "sessionid=" + session_id + "; " + cookies;

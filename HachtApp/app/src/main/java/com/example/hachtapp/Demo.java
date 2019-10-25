@@ -1,5 +1,6 @@
 package com.example.hachtapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -23,7 +24,22 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.example.hachtapp.controller.Controller;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 
@@ -34,6 +50,8 @@ public class Demo extends AppCompatActivity {
     Uri imageUri;
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
     String path_sample;
+    private StorageReference mStorageRef;
+    private TextView result_textview;
 
 
     @Override
@@ -44,6 +62,12 @@ public class Demo extends AppCompatActivity {
         Button btnCamera = findViewById(R.id.btnCamera);
         Button btnAnalizar = findViewById(R.id.btnAnalizar);
         imageView = findViewById(R.id.imageView);
+
+        result_textview = findViewById(R.id.textView2);
+
+        result_textview.setVisibility(View.INVISIBLE);
+
+        mStorageRef = FirebaseStorage.getInstance().getReference();
 
         if(checkPermissionREAD_EXTERNAL_STORAGE(this)){}
 
@@ -68,7 +92,7 @@ public class Demo extends AppCompatActivity {
         btnAnalizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HandleModelForward();
+                HandleModelForward(imageUri);
             }
         });
 
@@ -101,7 +125,6 @@ public class Demo extends AppCompatActivity {
             imageView.setImageBitmap(thumbnail);
             imageView.setRotation(90);
             path_sample = getRealPathFromURI(imageUri);
-            System.out.println(path_sample);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -162,7 +185,56 @@ public class Demo extends AppCompatActivity {
         alert.show();
     }
 
-    private void HandleModelForward(){
-        //do forward stuff...
+    private void HandleModelForward(Uri uri){
+
+        StorageReference riversRef = mStorageRef.child("Demo_app/sample.jpg");
+
+        Toast.makeText(Demo.this, "Analizando Muestra", Toast.LENGTH_LONG).show();
+
+        riversRef.putFile(uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                Task<Uri> uriTask = task.getResult().getStorage().getDownloadUrl();
+                while(!uriTask.isComplete());
+                Uri downloadUrl = uriTask.getResult();
+                String url = downloadUrl.toString();
+                System.out.println(downloadUrl.toString());
+
+                try{
+
+
+                    Controller controller = Controller.get_instance();
+                    controller.setContext(Demo.this);
+
+                    controller.test_sample(url, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                String result = response.getString("estimacion");
+                                result_textview.setText("Resultado: " + result);
+                                result_textview.setVisibility(View.VISIBLE);
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            System.out.println(response.toString());
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            System.out.println(error.toString());
+                            System.out.println("No se pudo obtener las sesiones del paciente, dentro del request");
+                        }
+                    });
+
+                }catch (Exception e){
+                    System.out.println("No se pudo obtener las sesiones del paciente");
+                }
+                //Toast.makeText(Demo.this, "Item agregado con exito", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
     }
 }

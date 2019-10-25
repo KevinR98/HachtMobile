@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "225406534324",
+    "firebase_url": "https://hacht-7d98d.firebaseio.com",
+    "project_id": "hacht-7d98d",
+    "storage_bucket": "hacht-7d98d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:225406534324:android:a6fcb64379d1cf23cd4de1",
+        "android_client_info": {
+          "package_name": "com.example.hachtapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "225406534324-13qglo7r46h6oc5khpfcrvgoih4jmhhn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hachtapp",
+            "certificate_hash": "e9fd800412345f39fc624d62ba46ab92e4a7c33b"
+          }
+        },
+        {
+          "client_id": "225406534324-n0hbp1tdjlk721p2a66ijgogr59g880g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNJEPz4zrvzCFFg-nw14fZH6dGcUDU1hM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "225406534324-n0hbp1tdjlk721p2a66ijgogr59g880g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

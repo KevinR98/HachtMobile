@@ -106,9 +106,8 @@ public class Dash_Pacientes extends AppCompatActivity {
 
     //Move to the next activity
     private void GotoDashSesiones(String data){
-        /*Intent intent = new Intent(this, Dash_Sesiones.class);
+        Intent intent = new Intent(this, Dash_Sesiones.class);
         intent.putExtra("Data", data);
-        startActivity(intent);*/
-        Toast.makeText(getApplicationContext(), data, Toast.LENGTH_LONG).show();
+        startActivity(intent);
     }
 }
