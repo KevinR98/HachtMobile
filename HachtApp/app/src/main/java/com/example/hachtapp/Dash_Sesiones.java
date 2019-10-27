@@ -2,6 +2,7 @@ package com.example.hachtapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,7 +30,7 @@ public class Dash_Sesiones extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pacientes);
+        setContentView(R.layout.activity_dash__sesiones);
 
         ListView resultsListView = findViewById(R.id.list_view);
 
@@ -85,7 +86,7 @@ public class Dash_Sesiones extends AppCompatActivity {
             controller.get_muestras_sesion(id, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    System.out.println(response.toString());
+                    GotoSesion(response.toString());
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -97,5 +98,12 @@ public class Dash_Sesiones extends AppCompatActivity {
         }catch (Exception e){
             System.out.println("No se pudo obtener las sesiones del paciente");
         }
+    }
+
+    private void GotoSesion(String data){
+        Intent intent = new Intent(Dash_Sesiones.this, Sesion.class );
+        intent.putExtra("Data", data);
+        startActivity(intent);
+
     }
 }
