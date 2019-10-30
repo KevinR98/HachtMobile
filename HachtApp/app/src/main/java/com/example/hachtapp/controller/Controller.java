@@ -23,6 +23,11 @@ import java.util.Map;
 // The idea is to have one and only one controller for all the views.
 public class Controller {
 
+    // Dominio para conexión a python anywhere
+    //private final String domain = "http://martinvc96.pythonanywhere.com/";
+
+    // Dominio para conexión local
+    private final String domain = "http://192.168.0.15:8000/";
     private static Controller instance;
     private Context ctx;
     private String cookies;
@@ -39,13 +44,13 @@ public class Controller {
 
     private Controller(Context ctx, Response.Listener listener){
         this.ctx = ctx;
-        request_get_cookies("http://martinvc96.pythonanywhere.com/", listener, null);
+        request_get_cookies(domain, listener, null);
         instance = this;
     }
 
     public void initialize(Context ctx, Response.Listener listener){
         this.ctx = ctx;
-        request_get_cookies("http://martinvc96.pythonanywhere.com/", listener, null);
+        request_get_cookies(domain, listener, null);
     }
 
     public Context getContext(){ return ctx; }
@@ -207,15 +212,15 @@ public class Controller {
                       Response.ErrorListener errorListener){
 
         Map<String, String>  params = new HashMap<String, String>();
-        params.put("username", "martin@algo.com");
-        params.put("password", "1234");
-        request_post("http://martinvc96.pythonanywhere.com/login_app/", params, listener, errorListener);
+        params.put("username", "gmonge");
+        params.put("password", "*proyecto1234*");
+        request_post(domain + "login_app/", params, listener, errorListener);
     }
 
     public void get_pacientes(Response.Listener listener,
                               Response.ErrorListener errorListener){
 
-        request_get("http://martinvc96.pythonanywhere.com/dashboard_pacientes/",
+        request_get(domain + "dashboard_pacientes/",
                 listener,
                 errorListener);
 
@@ -228,7 +233,7 @@ public class Controller {
         HashMap<String, String> params = new HashMap<>();
         params.put("id_paciente", id_paciente);
 
-        request_get("http://martinvc96.pythonanywhere.com/dashboard_sesiones/",
+        request_get(domain + "dashboard_sesiones/",
                 params,
                 listener,
                 errorListener);
