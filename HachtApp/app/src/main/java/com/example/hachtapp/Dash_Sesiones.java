@@ -47,6 +47,8 @@ public class Dash_Sesiones extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        FillListView();
+
 
     }
 
