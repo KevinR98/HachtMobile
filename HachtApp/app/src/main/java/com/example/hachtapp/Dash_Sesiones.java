@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -26,13 +27,16 @@ public class Dash_Sesiones extends AppCompatActivity {
 
     private JSONArray sesiones;
     private String[] estados = {"Seguro", "Moderado", "Riesgoso"};
+    ListView resultsListView;
+    TextView txt_sesiones;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dash__sesiones);
 
-        ListView resultsListView = findViewById(R.id.list_view);
+        resultsListView = findViewById(R.id.list_view);
+        txt_sesiones = findViewById(R.id.textView3);
 
         JSONObject json;
         try {
@@ -43,36 +47,6 @@ public class Dash_Sesiones extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        List<HashMap<String, String>> listItems = new ArrayList<>();
-        SimpleAdapter adapter = new SimpleAdapter(this, listItems, R.layout.list_item,
-                new String[]{"First Line", "Second Line"},
-                new int[]{R.id.text1, R.id.text2});
-
-        for (int i = 0; i < sesiones.length(); i++)
-        {
-            HashMap<String, String> resultsMap = new HashMap<>();
-            try {
-                String fecha = sesiones.getJSONObject(i).getString("created_at");
-                int index_estado = Integer.parseInt(sesiones.getJSONObject(i).getString("estado"));
-
-                resultsMap.put("First Line", "Fecha: " + fecha.substring(0, 10));
-                resultsMap.put("Second Line", "Estado: " + estados[index_estado]);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            listItems.add(resultsMap);
-        }
-
-        resultsListView.setAdapter(adapter);
-        resultsListView.setClickable(true);
-        resultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                System.out.println(position);
-                sesionClick(position);
-            }
-        });
 
     }
 
@@ -104,6 +78,40 @@ public class Dash_Sesiones extends AppCompatActivity {
         Intent intent = new Intent(Dash_Sesiones.this, Sesion.class );
         intent.putExtra("Data", data);
         startActivity(intent);
+
+    }
+
+    private void FillListView(){
+        List<HashMap<String, String>> listItems = new ArrayList<>();
+        SimpleAdapter adapter = new SimpleAdapter(this, listItems, R.layout.list_item,
+                new String[]{"First Line", "Second Line"},
+                new int[]{R.id.text1, R.id.text2});
+
+        for (int i = 0; i < sesiones.length(); i++)
+        {
+            HashMap<String, String> resultsMap = new HashMap<>();
+            try {
+                String fecha = sesiones.getJSONObject(i).getString("created_at");
+                int index_estado = Integer.parseInt(sesiones.getJSONObject(i).getString("estado"));
+
+                resultsMap.put("First Line", "Fecha: " + fecha.substring(0, 10));
+                resultsMap.put("Second Line", "Estado: " + estados[index_estado]);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            listItems.add(resultsMap);
+        }
+
+        resultsListView.setAdapter(adapter);
+        resultsListView.setClickable(true);
+        resultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                System.out.println(position);
+                sesionClick(position);
+            }
+        });
 
     }
 }

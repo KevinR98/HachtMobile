@@ -22,10 +22,11 @@ import java.util.Map;
 public class Controller {
 
     // Dominio para conexión a python anywhere
-    //private final String domain = "http://martinvc96.pythonanywhere.com/";
+    private final String domain = "http://martinvc96.pythonanywhere.com/";
 
     // Dominio para conexión local
-    private final String domain = "http://192.168.0.15:8000/";
+    //private final String domain = "http://192.168.0.15:8000/";
+
     private static Controller instance;
     private Context ctx;
     private String cookies;
@@ -210,8 +211,8 @@ public class Controller {
                       Response.ErrorListener errorListener){
 
         Map<String, String>  params = new HashMap<String, String>();
-        params.put("username", "gmonge");
-        params.put("password", "*proyecto1234*");
+        params.put("username", nombre);
+        params.put("password", pass);
         request_post(domain + "login_app/", params, listener, errorListener);
     }
 
@@ -268,13 +269,16 @@ public class Controller {
 
 
     private String add_session_cookies(){
-        if (!cookies.contains("sessionid")) {
-            return "sessionid=" + session_id + "; " + cookies;
-        }
-        else {
-            String session = cookies.substring(cookies.indexOf('=')+1, cookies.indexOf(';'));
-            session_id = session;
-            return cookies;
+        if (cookies != null) {
+            if (!cookies.contains("sessionid")) {
+                return "sessionid=" + session_id + "; " + cookies;
+            } else {
+                String session = cookies.substring(cookies.indexOf('=') + 1, cookies.indexOf(';'));
+                session_id = session;
+                return cookies;
+            }
+        }else{
+            return "";
         }
     }
 

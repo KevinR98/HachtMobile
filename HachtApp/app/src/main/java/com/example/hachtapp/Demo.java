@@ -194,13 +194,14 @@ public class Demo extends AppCompatActivity {
         riversRef.putFile(uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                Task<Uri> uriTask = task.getResult().getStorage().getDownloadUrl();
-                while(!uriTask.isComplete());
-                Uri downloadUrl = uriTask.getResult();
-                String url = downloadUrl.toString();
-                System.out.println(downloadUrl.toString());
 
                 try{
+
+                    Task<Uri> uriTask = task.getResult().getStorage().getDownloadUrl();
+                    while(!uriTask.isComplete());
+                    Uri downloadUrl = uriTask.getResult();
+                    String url = downloadUrl.toString();
+                    System.out.println(downloadUrl.toString());
 
 
                     Controller controller = Controller.get_instance();
@@ -213,6 +214,7 @@ public class Demo extends AppCompatActivity {
                                 String result = response.getString("estimacion");
                                 result_textview.setText("Resultado: " + result);
                                 result_textview.setVisibility(View.VISIBLE);
+                                Toast.makeText(Demo.this, "Analisis completado", Toast.LENGTH_LONG).show();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();

@@ -61,6 +61,7 @@ public class Sesion extends AppCompatActivity {
 
         params_names.setMargins(100,300,100,100);
 
+
         LinearLayout.LayoutParams params_images = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -74,6 +75,16 @@ public class Sesion extends AppCompatActivity {
             try {
                 String pred = muestras.getJSONObject(i).getString("pred");
                 String url = muestras.getJSONObject(i).getString("url_img");
+                String validated = muestras.getJSONObject(i).getString("pred_true");
+
+                if(validated.equals("null")){
+                    System.out.println("entra");
+                    validated = "Estimación no validada";}
+
+
+
+
+
 
                 //clean url
 
@@ -82,7 +93,7 @@ public class Sesion extends AppCompatActivity {
 
 
                 TextView name = new TextView(this);
-                name.setText(pred);
+                name.setText("Estimación obtenida:" + '\n' + pred + '\n' + '\n' + "Estimación corecta:" + '\n' + validated);
                 name.setLayoutParams(params_names);
                 name.setTextSize(20);
                 name.setGravity(Gravity.CENTER);
@@ -91,12 +102,11 @@ public class Sesion extends AppCompatActivity {
                 ImageView imageView = new ImageView(this);
                 imageView.setLayoutParams(params_images);
                 new GetImageFromURL(imageView).execute(url);
-                //imageView.setBackgroundResource(R.drawable.common_full_open_on_phone);
-                //Picasso.get().load("https://cdn.shopify.com/s/files/1/0885/7466/products/smiley-face-windshield-decals-302-smil_740x.png?v=1562872895").fit().into(imageView);
-
-
-
                 linearLayout.addView(imageView);
+
+
+
+
 
 
             } catch (JSONException e) {
