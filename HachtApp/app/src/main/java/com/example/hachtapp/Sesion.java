@@ -38,8 +38,6 @@ public class Sesion extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sesion);
 
-
-
         JSONObject json;
         try {
             json = new JSONObject(getIntent().getStringExtra("Data"));

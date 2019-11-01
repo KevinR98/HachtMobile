@@ -8,12 +8,10 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -247,7 +245,7 @@ public class Controller {
         HashMap<String, String> params = new HashMap<>();
         params.put("id_sesion", id_sesion);
 
-        request_get("http://martinvc96.pythonanywhere.com/dashboard_sesiones/components/muestras_sesion/",
+        request_get(domain + "dashboard_sesiones/components/muestras_sesion/",
                 params,
                 listener,
                 errorListener);
@@ -261,7 +259,7 @@ public class Controller {
         HashMap<String, String> params = new HashMap<>();
         params.put("url", url);
 
-        request_get("http://martinvc96.pythonanywhere.com/demo_app/",
+        request_get(domain + "demo_app/",
                 params,
                 listener,
                 errorListener);
