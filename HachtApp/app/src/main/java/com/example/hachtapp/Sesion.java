@@ -77,11 +77,12 @@ public class Sesion extends AppCompatActivity {
             try {
                 String pred = muestras.getJSONObject(i).getString("pred");
                 String url = muestras.getJSONObject(i).getString("url_img");
-                String validated = muestras.getJSONObject(i).getString("is_true");
+                String validated = muestras.getJSONObject(i).getString("pred_true");
 
                 if(validated.equals("null")){
                     System.out.println("entra");
                     validated = "Estimación no validada";}
+
 
 
 

@@ -35,6 +35,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.hachtapp.Dash_Pacientes;
+import com.example.hachtapp.Dash_Sesiones;
 import com.example.hachtapp.MainHub;
 import com.example.hachtapp.R;
 import com.example.hachtapp.controller.Controller;
@@ -107,15 +109,30 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                                 if (loginResult.getSuccess() != null) {
                                     updateUiWithUser(loginResult.getSuccess());
-                                    GotoMainHub(loginResult.getSuccess().getResponse().toString());
+                                    String data = loginResult.getSuccess().getResponse().toString();
+
+
+                                    JSONObject json = null;
+
+                                    try {
+                                        json = new JSONObject(data);
+                                        System.out.println(json);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    try {
+                                        json.getString("sesiones");
+                                        GotoSesiones(data);
+                                    } catch (JSONException e) {
+                                        GotoPacientes(data);
+                                    }
+
+
                                 }
 
                                 setResult(Activity.RESULT_OK);
 
-                                /*
-                                Debería hacer el nuevo activity o view acá!!!
-                                 */
-                                //finish();
                             }
                         });
 
@@ -175,11 +192,19 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
 
-    //Move to the next activity
-    private void GotoMainHub(String data){
-        Intent intent = new Intent(this, MainHub.class);
+
+    private void GotoPacientes(String data){
+        Intent intent = new Intent(this, Dash_Pacientes.class);
         intent.putExtra("Data", data);
         startActivity(intent);
     }
+
+
+    private void GotoSesiones(String data){
+        Intent intent = new Intent(this, Dash_Sesiones.class);
+        intent.putExtra("Data", data);
+        startActivity(intent);
+    }
+
 
 }
