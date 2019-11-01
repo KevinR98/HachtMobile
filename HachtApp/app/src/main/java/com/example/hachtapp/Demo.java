@@ -213,6 +213,7 @@ public class Demo extends AppCompatActivity {
                                 String result = response.getString("estimacion");
                                 result_textview.setText("Resultado: " + result);
                                 result_textview.setVisibility(View.VISIBLE);
+                                Toast.makeText(Demo.this, "Analisis completado", Toast.LENGTH_LONG).show();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();

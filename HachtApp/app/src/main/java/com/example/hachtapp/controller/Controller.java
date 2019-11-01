@@ -207,8 +207,8 @@ public class Controller {
                       Response.ErrorListener errorListener){
 
         Map<String, String>  params = new HashMap<String, String>();
-        params.put("username", "martin@algo.com");
-        params.put("password", "1234");
+        params.put("username", nombre);
+        params.put("password", pass);
         request_post("http://martinvc96.pythonanywhere.com/login_app/", params, listener, errorListener);
     }
 

@@ -10,6 +10,7 @@ import android.widget.Button;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.example.hachtapp.controller.Controller;
+import com.example.hachtapp.ui.login.LoginActivity;
 
 import org.json.JSONObject;
 
@@ -38,7 +39,7 @@ public class MainHub extends AppCompatActivity {
         dash_pacientes_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GotoDasboardPacientes();
+                GotoLogin();
             }
         });
 
@@ -52,9 +53,8 @@ public class MainHub extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void GotoDasboardPacientes(){
-        Intent intent = new Intent(this, Dash_Pacientes.class);
-        intent.putExtra("Data", data);
+    private void GotoLogin(){
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
