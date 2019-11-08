@@ -267,6 +267,18 @@ public class Controller {
 
     }
 
+    public void ver_graficos_sesion(
+            String id_sesion,
+            Response.Listener listener,
+            Response.ErrorListener errorListener){
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("id_sesion", id_sesion);
+
+        request_get(domain + "dashboard_sesiones/components/analytics_sesion/", params, listener, errorListener);
+
+    }
+
 
     private String add_session_cookies(){
         if (cookies != null) {

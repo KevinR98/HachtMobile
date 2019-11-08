@@ -17,7 +17,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="UnusedAttribute">
-        <activity android:name=".Demo"></activity>
+        <activity android:name=".Graficos_Sesion"></activity>
+        <activity android:name=".Demo" />
         <activity android:name=".Sesion" />
         <activity android:name=".Dash_Sesiones" />
         <activity android:name=".Dash_Pacientes" />
