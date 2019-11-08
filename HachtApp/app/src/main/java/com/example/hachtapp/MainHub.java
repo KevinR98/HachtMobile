@@ -14,6 +14,7 @@ import com.example.hachtapp.ui.login.LoginActivity;
 
 import org.json.JSONObject;
 
+
 public class MainHub extends AppCompatActivity {
 
     private String data;
@@ -45,6 +46,7 @@ public class MainHub extends AppCompatActivity {
 
 
 
+
     }
 
 
@@ -57,6 +59,7 @@ public class MainHub extends AppCompatActivity {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
+
 
 
 }
