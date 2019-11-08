@@ -2,6 +2,7 @@ package com.example.hachtapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -31,6 +32,8 @@ public class Sesion extends AppCompatActivity {
 
     ScrollView scrollView;
     private JSONArray muestras;
+    private JSONObject sesion;
+    private Button button_graficos_sesion;
     Bitmap bitmap;
 
     @Override
@@ -38,13 +41,35 @@ public class Sesion extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sesion);
 
-
+        button_graficos_sesion = findViewById(R.id.button_graficos_sesion);
 
         JSONObject json;
         try {
             json = new JSONObject(getIntent().getStringExtra("Data"));
             muestras = json.getJSONArray("muestras");
-            System.out.println(json);
+            sesion = json.getJSONObject("sesion");
+
+            button_graficos_sesion.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    try{
+
+                        // Paciente
+                        String id_sesion = sesion.getString("id");
+                        String url = "http://martinvc96.pythonanywhere.com/dashboard_sesiones/components/analytics_sesion/?android=1&id_sesion=";
+                        url += id_sesion;
+
+                        // Lleva a actividad webview
+                        GotoGraficos(url);
+
+                    }catch (Exception e){
+                        System.out.println("Ha habido un error extrayendo la información");
+                    }
+
+                }
+            });
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -151,6 +176,13 @@ public class Sesion extends AppCompatActivity {
             super.onPostExecute(bitmap);
             imgV.setImageBitmap(bitmap);
         }
+    }
+
+    //Move to the next activity
+    private void GotoGraficos(String data){
+        Intent intent = new Intent(this, Graficos_Sesion.class);
+        intent.putExtra("url", data);
+        startActivity(intent);
     }
 
 

@@ -8,12 +8,10 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -22,6 +20,12 @@ import java.util.Map;
 // Singleton Controller
 // The idea is to have one and only one controller for all the views.
 public class Controller {
+
+    // Dominio para conexión a python anywhere
+    private final String domain = "http://martinvc96.pythonanywhere.com/";
+
+    // Dominio para conexión local
+    //private final String domain = "http://192.168.0.15:8000/";
 
     private static Controller instance;
     private Context ctx;
@@ -39,13 +43,13 @@ public class Controller {
 
     private Controller(Context ctx, Response.Listener listener){
         this.ctx = ctx;
-        request_get_cookies("http://martinvc96.pythonanywhere.com/", listener, null);
+        request_get_cookies(domain, listener, null);
         instance = this;
     }
 
     public void initialize(Context ctx, Response.Listener listener){
         this.ctx = ctx;
-        request_get_cookies("http://martinvc96.pythonanywhere.com/", listener, null);
+        request_get_cookies(domain, listener, null);
     }
 
     public Context getContext(){ return ctx; }
@@ -209,13 +213,13 @@ public class Controller {
         Map<String, String>  params = new HashMap<String, String>();
         params.put("username", nombre);
         params.put("password", pass);
-        request_post("http://martinvc96.pythonanywhere.com/login_app/", params, listener, errorListener);
+        request_post(domain + "login_app/", params, listener, errorListener);
     }
 
     public void get_pacientes(Response.Listener listener,
                               Response.ErrorListener errorListener){
 
-        request_get("http://martinvc96.pythonanywhere.com/dashboard_pacientes/",
+        request_get(domain + "dashboard_pacientes/",
                 listener,
                 errorListener);
 
@@ -228,7 +232,7 @@ public class Controller {
         HashMap<String, String> params = new HashMap<>();
         params.put("id_paciente", id_paciente);
 
-        request_get("http://martinvc96.pythonanywhere.com/dashboard_sesiones/",
+        request_get(domain + "dashboard_sesiones/",
                 params,
                 listener,
                 errorListener);
@@ -242,7 +246,7 @@ public class Controller {
         HashMap<String, String> params = new HashMap<>();
         params.put("id_sesion", id_sesion);
 
-        request_get("http://martinvc96.pythonanywhere.com/dashboard_sesiones/components/muestras_sesion/",
+        request_get(domain + "dashboard_sesiones/components/muestras_sesion/",
                 params,
                 listener,
                 errorListener);
@@ -256,22 +260,37 @@ public class Controller {
         HashMap<String, String> params = new HashMap<>();
         params.put("url", url);
 
-        request_get("http://martinvc96.pythonanywhere.com/demo_app/",
+        request_get(domain + "demo_app/",
                 params,
                 listener,
                 errorListener);
 
     }
 
+    public void ver_graficos_sesion(
+            String id_sesion,
+            Response.Listener listener,
+            Response.ErrorListener errorListener){
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("id_sesion", id_sesion);
+
+        request_get(domain + "dashboard_sesiones/components/analytics_sesion/", params, listener, errorListener);
+
+    }
+
 
     private String add_session_cookies(){
-        if (!cookies.contains("sessionid")) {
-            return "sessionid=" + session_id + "; " + cookies;
-        }
-        else {
-            String session = cookies.substring(cookies.indexOf('=')+1, cookies.indexOf(';'));
-            session_id = session;
-            return cookies;
+        if (cookies != null) {
+            if (!cookies.contains("sessionid")) {
+                return "sessionid=" + session_id + "; " + cookies;
+            } else {
+                String session = cookies.substring(cookies.indexOf('=') + 1, cookies.indexOf(';'));
+                session_id = session;
+                return cookies;
+            }
+        }else{
+            return "";
         }
     }
 

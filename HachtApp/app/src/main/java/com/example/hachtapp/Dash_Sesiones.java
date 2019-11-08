@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -26,9 +27,11 @@ import java.util.List;
 public class Dash_Sesiones extends AppCompatActivity {
 
     private JSONArray sesiones;
+    private JSONObject paciente;
     private String[] estados = {"Seguro", "Moderado", "Riesgoso"};
     ListView resultsListView;
     TextView txt_sesiones;
+    Button button_graficos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +40,40 @@ public class Dash_Sesiones extends AppCompatActivity {
 
         resultsListView = findViewById(R.id.list_view);
         txt_sesiones = findViewById(R.id.textView3);
+        button_graficos = findViewById(R.id.button_graficos);
 
         JSONObject json;
         try {
             json = new JSONObject(getIntent().getStringExtra("Data"));
+            paciente = json.getJSONObject("paciente");
             sesiones = json.getJSONArray("sesiones");
             System.out.println(sesiones);
+
+            txt_sesiones.setVisibility(View.GONE);
+            button_graficos.setVisibility(View.VISIBLE);
+
+            button_graficos.setOnClickListener(
+                    new View.OnClickListener(){
+
+                        public void onClick(View view){
+
+                            try{
+
+                                // Paciente
+                                String id_paciente = paciente.getString("id");
+                                String url = "http://martinvc96.pythonanywhere.com/dashboard_pacientes/components/analytics_paciente/?android=1&id_paciente=";
+                                url += id_paciente;
+
+                                // Lleva a actividad webview
+                                GotoGraficos("http://martinvc96.pythonanywhere.com/dashboard_sesiones/components/analytics_sesion/?android=1&id_sesion=2");
+
+                            }catch (Exception e){
+                                System.out.println("Ha habido un error extrayendo la información");
+                            }
+                        }
+
+                    }
+            );
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -115,5 +146,12 @@ public class Dash_Sesiones extends AppCompatActivity {
             }
         });
 
+    }
+
+    //Move to the next activity
+    private void GotoGraficos(String data){
+        Intent intent = new Intent(this, Graficos_Sesion.class);
+        intent.putExtra("url", data);
+        startActivity(intent);
     }
 }
